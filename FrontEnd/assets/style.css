@@ -488,3 +488,19 @@ footer nav ul {
 .upload-container img[src^="data:image"]:not([src="#"]) ~ p {
     display: none;
 }
+
+#btn-valider {
+    background-color: #A7A7A7;
+    color: white;
+    padding: 10px 100px;
+    border-radius: 60px;
+    border: none;
+    cursor: not-allowed;
+    margin: 20px auto;
+    display: block;
+}
+
+#btn-valider.active {
+    background-color: var(--text-color);
+    cursor: pointer;
+}
