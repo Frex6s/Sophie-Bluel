@@ -35,46 +35,45 @@ function displayWorks(worksToDisplay) {
     }
 }
 
-const toutLesBouttons = document.querySelectorAll('.filter-btn');
-const bouttonTous = document.querySelector('.filter-all');
+async function displayFilters() {
+    const response = await fetch("http://localhost:5678/api/categories");
+    const categories = await response.json();
 
-if (bouttonTous) {
-    bouttonTous.addEventListener('click', function(){
+    const filtersContainer = document.querySelector('.filters');
+    filtersContainer.innerHTML = "";
+
+    const btnAll = document.createElement("button");
+    btnAll.textContent = "Tous";
+    btnAll.classList.add("filter-btn", "btn-active");
+    filtersContainer.appendChild(btnAll);
+
+    btnAll.addEventListener("click", () => {
         displayWorks(works);
-        toutLesBouttons.forEach(btn => btn.classList.remove('btn-active'));
-        bouttonTous.classList.add('btn-active');
+        updateActiveBtn(btnAll);
     });
-    
-    const bouttonObject = document.querySelector('.filter-objects');
-    if (bouttonObject) {
-        bouttonObject.addEventListener('click', function(){
-            const worksObject = works.filter(work => work.categoryId === 1);
-            displayWorks(worksObject);
-            toutLesBouttons.forEach(btn => btn.classList.remove('btn-active'));
-            bouttonObject.classList.add('btn-active');
-        });
-    }
-    
-    const bouttonFlat = document.querySelector('.filter-flat');
-    if (bouttonFlat) {
-        bouttonFlat.addEventListener('click', function(){
-            const worksFlat = works.filter(work => work.categoryId === 2);
-            displayWorks(worksFlat);
-            toutLesBouttons.forEach(btn => btn.classList.remove('btn-active'));
-            bouttonFlat.classList.add('btn-active');
-        });
-    }
 
-    const bouttonHotelRestaurant = document.querySelector('.filter-hotel-restaurant');
-    if (bouttonHotelRestaurant) {
-        bouttonHotelRestaurant.addEventListener('click', function(){
-            const worksHotelRestaurant = works.filter(work => work.categoryId === 3);
-            displayWorks(worksHotelRestaurant);
-            toutLesBouttons.forEach(btn => btn.classList.remove('btn-active'));
-            bouttonHotelRestaurant.classList.add('btn-active');
+    categories.forEach(category => {
+        const btn = document.createElement("button");
+        btn.textContent = category.name;
+        btn.classList.add("filter-btn");
+        filtersContainer.appendChild(btn);
+
+        btn.addEventListener("click", () => {
+            const filteredWorks = works.filter(work => work.categoryId === category.id);
+            displayWorks(filteredWorks);
+            updateActiveBtn(btn);
         });
-    }
+    });
 }
+
+function updateActiveBtn(clickedBtn) {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('btn-active');
+    });
+    clickedBtn.classList.add('btn-active');
+}
+
+displayFilters();
 
 const form = document.querySelector('#formLogIn');
 
@@ -117,6 +116,7 @@ function checkLogin(){
         if (editBar) {
             editBar.classList.add('active');
             editBar.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>Mode édition';
+            editBar.addEventListener('click', openModal);
         }
     
         if (loginLink) {
@@ -147,35 +147,39 @@ checkLogin();
 function openModal() {
     const modal = document.querySelector('#modal');
     if (!modal) return;
+    
+    const viewGallery = document.getElementById('modal-view-gallery');
+    const viewAdd = document.getElementById('modal-view-add');
+    const btnBack = document.querySelector('.modal-back');
+
+    if (viewGallery) viewGallery.style.display = '';
+    if (viewAdd) viewAdd.style.display = 'none';
+    if (btnBack) btnBack.style.visibility = 'hidden';
+
     modal.style.display = 'flex';
     modal.removeAttribute('aria-hidden');
 
     displayModalGallery();
-
-    const closeBtn = modal.querySelector('.close-modal');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
-    
-    modal.onclick = (event) => {
-        if (event.target === modal) closeModal();
-    };
 }
 
 function closeModal() {
     const modal = document.querySelector('#modal');
     if (!modal) return;
     
-    const viewGallery = document.getElementById('modal-view-gallery');
-    const viewAdd = document.getElementById('modal-view-add');
-    const btnBack = document.querySelector('.modal-back');
-
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
+    
+    resetAddForm();
+}
 
-    if (viewGallery) viewGallery.style.display = 'flex';
-    if (viewAdd) viewAdd.style.display = 'none';
-    if (btnBack) btnBack.style.visibility = 'hidden';
+const modalElement = document.querySelector('#modal');
+if (modalElement) {
+    const closeBtns = modalElement.querySelectorAll('.close-modal');
+    closeBtns.forEach(btn => btn.addEventListener('click', closeModal));
+    
+    modalElement.addEventListener('click', (event) => {
+        if (event.target === modalElement) closeModal();
+    });
 }
 
 function displayModalGallery() {
@@ -235,7 +239,7 @@ if (btnAddPhoto) {
 
 if (btnBack) {
     btnBack.addEventListener('click', () => {
-        if (viewGallery) viewGallery.style.display = 'block';
+        if (viewGallery) viewGallery.style.display = '';
         if (viewAdd) viewAdd.style.display = 'none'; 
         btnBack.style.visibility = 'hidden'; 
     });
@@ -321,7 +325,9 @@ if (formAdd) {
                 displayWorks(works);
                 displayModalGallery();
                 resetAddForm();
-                alert("Projet ajouté avec succès !");
+                if (viewGallery) viewGallery.style.display = '';
+                if (viewAdd) viewAdd.style.display = 'none'; 
+                if (btnBack) btnBack.style.visibility = 'hidden'; 
             } else {
                 alert("Erreur lors de l'ajout");
             }
