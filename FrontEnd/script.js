@@ -12,6 +12,8 @@ async function init() {
 
 init();
 
+// les projets
+
 function displayWorks(worksToDisplay) {
     const sectionGallery = document.querySelector('.gallery');
     if (!sectionGallery) return;
@@ -34,6 +36,8 @@ function displayWorks(worksToDisplay) {
         sectionGallery.appendChild(workElement);
     }
 }
+
+// filtres
 
 async function displayFilters() {
     const response = await fetch("http://localhost:5678/api/categories");
@@ -75,6 +79,8 @@ function updateActiveBtn(clickedBtn) {
 
 displayFilters();
 
+// connexion    
+
 const form = document.querySelector('#formLogIn');
 
 if (form){   
@@ -105,6 +111,9 @@ if (form){
         }
     });
 }
+
+
+// système de compte + mode edit
 
 const token = localStorage.getItem('token');
 
@@ -144,6 +153,8 @@ function checkLogin(){
 
 checkLogin();
 
+// gestion modal
+
 function openModal() {
     const modal = document.querySelector('#modal');
     if (!modal) return;
@@ -182,6 +193,8 @@ if (modalElement) {
     });
 }
 
+// gallery dans le modal
+
 function displayModalGallery() {
     const modalGallery = document.querySelector('.modal-gallery');
     if (!modalGallery) return;
@@ -208,6 +221,8 @@ function displayModalGallery() {
     });
 }
 
+// enlever work
+
 async function deleteWork(id) {
     const response = await fetch(`http://localhost:5678/api/works/${id}`, {
         method: 'DELETE',
@@ -222,6 +237,8 @@ async function deleteWork(id) {
         alert("Erreur lors de la suppression");
     }
 }
+
+// ajout works
 
 const btnAddPhoto = document.querySelector('.btn-add-photo');
 const btnBack = document.querySelector('.modal-back');
@@ -245,6 +262,8 @@ if (btnBack) {
     });
 }
 
+// preview
+
 const fileInput = document.querySelector('#file-upload');
 const previewImage = document.querySelector('#preview-image');
 const uploadContainerItems = document.querySelectorAll('.upload-container i, .upload-container .btn-upload-label, .upload-container p');
@@ -264,6 +283,8 @@ if (fileInput && previewImage) {
     });
 }
 
+// requete api categories
+
 async function loadCategoriesForModal() {
     const selectCategory = document.getElementById('work-category');
     if (!selectCategory) return; 
@@ -282,6 +303,9 @@ async function loadCategoriesForModal() {
         console.error(error);
     }
 }
+
+
+// ajout d'un projet et veriffication du form 
 
 const formAdd = document.getElementById('form-add-photo');
 const btnValider = document.getElementById('btn-valider');
@@ -336,7 +360,7 @@ if (formAdd) {
         }
     });
 }
-
+ // reset le form 
 function resetAddForm() {
     if (!formAdd) return;
     formAdd.reset();
